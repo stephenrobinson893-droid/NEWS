@@ -6,7 +6,7 @@ import time
 # CONFIG
 # ==============================
 
-WEBHOOK_URL = "[YOUR_NEW_WEBHOOK_HERE](https://discord.com/api/webhooks/1487947839870074960/DVq-eMNFOAwRu3ICAhDXllN5xLb5pD04U5QWJBu3QnlQLj_GHdD2mARAlJOQ-NwYkabh)"  # Put your new Discord webhook here
+WEBHOOK_URL = "(https://discord.com/api/webhooks/1487947839870074960/DVq-eMNFOAwRu3ICAhDXllN5xLb5pD04U5QWJBu3QnlQLj_GHdD2mARAlJOQ-NwYkabh)"  # Put your new Discord webhook here
 
 FEEDS = [
     "https://www.fxstreet.com/rss/news",
