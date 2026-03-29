@@ -1,4 +1,4 @@
-[import feedparser
+import feedparser
 import requests
 import time
 
@@ -6,7 +6,7 @@ import time
 # CONFIG
 # ==============================
 
-WEBHOOK_URL = "(https://discord.com/api/webhooks/1487947839870074960/DVq-eMNFOAwRu3ICAhDXllN5xLb5pD04U5QWJBu3QnlQLj_GHdD2mARAlJOQ-NwYkabh)"
+WEBHOOK_URL = "https://discord.com/api/webhooks/1487947839870074960/DVq-eMNFOAwRu3ICAhDXllN5xLb5pD04U5QWJBu3QnlQLj_GHdD2mARAlJOQ-NwYkabh"
 
 FEEDS = [
     "https://www.fxstreet.com/rss/news",
@@ -15,13 +15,11 @@ FEEDS = [
     "https://news.google.com/rss/search?q=stock+market+economy+finance"
 ]
 
-# Keywords for filtering
 HIGH_IMPACT_KEYWORDS = ["fed", "fomc", "cpi", "interest rate", "treasury", "yield"]
 MEDIUM_IMPACT_KEYWORDS = ["inflation", "gold", "xauusd", "usd", "dollar"]
 LOW_IMPACT_KEYWORDS = ["market", "stocks", "economy", "finance"]
 
 CHECK_INTERVAL = 300  # seconds (5 minutes)
-
 sent_links = set()
 
 # ==============================
