@@ -6,7 +6,7 @@ import time
 # CONFIG
 # ==============================
 
-WEBHOOK_URL = "(https://discord.com/api/webhooks/1487947839870074960/DVq-eMNFOAwRu3ICAhDXllN5xLb5pD04U5QWJBu3QnlQLj_GHdD2mARAlJOQ-NwYkabh)"
+WEBHOOK_URL = "PASTE_YOUR_NEW_WEBHOOK_HERE"  # Use a new webhook
 
 FEEDS = [
     "https://www.fxstreet.com/rss/news",
@@ -55,7 +55,6 @@ def fetch_news():
             if is_relevant(title):
                 send_to_discord(title, link)
                 sent_links.add(link)
-
 
 # ==============================
 # MAIN LOOP
