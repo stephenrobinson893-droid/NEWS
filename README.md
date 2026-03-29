@@ -30,11 +30,11 @@ def classify_impact(title):
     """Determine the impact level based on keywords"""
     title_lower = title.lower()
     if any(k in title_lower for k in HIGH_IMPACT_KEYWORDS):
-        return "🔥 HIGH IMPACT"
+        return " HIGH IMPACT"
     elif any(k in title_lower for k in MEDIUM_IMPACT_KEYWORDS):
-        return "⚠️ MEDIUM IMPACT"
+        return " MEDIUM IMPACT"
     elif any(k in title_lower for k in LOW_IMPACT_KEYWORDS):
-        return "ℹ️ LOW IMPACT"
+        return " LOW IMPACT"
     else:
         return None  # ignore irrelevant news
 
