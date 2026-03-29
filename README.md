@@ -6,7 +6,7 @@ import time
 # CONFIG
 # ==============================
 
-WEBHOOK_URL = "(https://discord.com/api/webhooks/1487942677528973513/D7FncZ-9vqINAqy91vfuHtpRopUtNtUTi-N-xrdyD5sdUCrxdb-Krs60nMBBw5FvYLqL)"
+WEBHOOK_URL = "(https://discord.com/api/webhooks/1487947839870074960/DVq-eMNFOAwRu3ICAhDXllN5xLb5pD04U5QWJBu3QnlQLj_GHdD2mARAlJOQ-NwYkabh)"
 
 FEEDS = [
     "https://www.fxstreet.com/rss/news",
