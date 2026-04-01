@@ -1,0 +1,35 @@
+name: Economic Data Bot
+
+on:
+  schedule:
+    - cron: "* * * * *"   # runs every minute
+  workflow_dispatch:
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run bot
+        run: python bot.py
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+
+      - name: Commit updated state
+        run: |
+          git config --global user.name "bot"
+          git config --global user.email "bot@example.com"
+          git add sent_events.json
+          git commit -m "Update sent events" || echo "No changes"
+          git push
