@@ -1,72 +1,101 @@
-import feedparser
 import requests
-import time
+import json
+import os
 
-# ==============================
+# =========================
 # CONFIG
-# ==============================
+# =========================
+WEBHOOK_URL = os.getenv("https://discord.com/api/webhooks/1489008377722830968/XnfmkcvFbny_GNs0IaRJYIRLCXPz2gd2bwISuZM1VPtCEsa_7kUEB1zXpj4myaS7Tbn1")
 
-WEBHOOK_URL = "https://discord.com/api/webhooks/1487947839870074960/DVq-eMNFOAwRu3ICAhDXllN5xLb5pD04U5QWJBu3QnlQLj_GHdD2mARAlJOQ-NwYkabh"
+URL = "https://nfs.faireconomy.media/ff_calendar_thisweek.json"
 
-FEEDS = [
-    "https://www.fxstreet.com/rss/news",
-    "https://www.forexlive.com/feed/",
-    "https://news.google.com/rss/search?q=gold+price+fed+inflation+USD",
-    "https://news.google.com/rss/search?q=stock+market+economy+finance"
-]
+CURRENCY = "USD"
+IMPACT = "High"
 
-HIGH_IMPACT_KEYWORDS = ["fed", "fomc", "cpi", "interest rate", "treasury", "yield"]
-MEDIUM_IMPACT_KEYWORDS = ["inflation", "gold", "xauusd", "usd", "dollar"]
-LOW_IMPACT_KEYWORDS = ["market", "stocks", "economy", "finance"]
+STATE_FILE = "sent_events.json"
 
-CHECK_INTERVAL = 300  # seconds (5 minutes)
-sent_links = set()
+# =========================
+# LOAD STATE
+# =========================
+def load_sent_events():
+    if os.path.exists(STATE_FILE):
+        with open(STATE_FILE, "r") as f:
+            return set(json.load(f))
+    return set()
 
-# ==============================
-# FUNCTIONS
-# ==============================
+def save_sent_events(events):
+    with open(STATE_FILE, "w") as f:
+        json.dump(list(events), f)
 
-def classify_impact(title):
-    """Determine the impact level based on keywords"""
-    title_lower = title.lower()
-    if any(k in title_lower for k in HIGH_IMPACT_KEYWORDS):
-        return " HIGH IMPACT"
-    elif any(k in title_lower for k in MEDIUM_IMPACT_KEYWORDS):
-        return " MEDIUM IMPACT"
-    elif any(k in title_lower for k in LOW_IMPACT_KEYWORDS):
-        return " LOW IMPACT"
-    else:
-        return None  # ignore irrelevant news
+sent_events = load_sent_events()
 
-def send_to_discord(title, link, impact):
-    """Send message to Discord with impact tagging"""
-    message = f"{impact}\n\n**{title}**\n{link}"
-    requests.post(WEBHOOK_URL, json={"content": message})
+# =========================
+# DISCORD
+# =========================
+def send_to_discord(message):
+    data = {"content": message}
+    requests.post(WEBHOOK_URL, json=data)
 
-def fetch_news():
-    """Fetch news from all feeds and post relevant items"""
-    for feed_url in FEEDS:
-        feed = feedparser.parse(feed_url)
-        for entry in feed.entries:
-            title = entry.title
-            link = entry.link
+# =========================
+# FETCH DATA
+# =========================
+def fetch_calendar():
+    try:
+        response = requests.get(URL)
+        return response.json()
+    except:
+        return []
 
-            if link in sent_links:
+# =========================
+# PROCESS EVENTS
+# =========================
+def process_events(events):
+    global sent_events
+
+    for event in events:
+        try:
+            currency = event.get("currency")
+            impact = event.get("impact")
+            title = event.get("title")
+            actual = event.get("actual")
+            forecast = event.get("forecast")
+            previous = event.get("previous")
+            time_str = event.get("time")
+
+            # Filters
+            if currency != CURRENCY or impact != IMPACT:
                 continue
 
-            impact = classify_impact(title)
-            if impact:
-                send_to_discord(title, link, impact)
-                sent_links.add(link)
+            # Only when actual data is released
+            if actual in (None, "", " "):
+                continue
 
-# ==============================
-# MAIN LOOP
-# ==============================
+            event_id = f"{title}-{time_str}"
 
-while True:
-    try:
-        fetch_news()
-        time.sleep(CHECK_INTERVAL)
-    except Exception as e:
-        print("Error:", e)
-        time.sleep(60)
+            if event_id in sent_events:
+                continue
+
+            message = (
+                f"🚨 **HIGH IMPACT ({currency})**\n"
+                f"**{title}**\n"
+                f"Actual: {actual}\n"
+                f"Forecast: {forecast}\n"
+                f"Previous: {previous}\n"
+                f"Time: {time_str}"
+            )
+
+            send_to_discord(message)
+
+            sent_events.add(event_id)
+
+        except:
+            continue
+
+    save_sent_events(sent_events)
+
+# =========================
+# RUN ONCE (GitHub handles schedule)
+# =========================
+if __name__ == "__main__":
+    events = fetch_calendar()
+    process_events(events)
